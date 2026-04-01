@@ -574,10 +574,14 @@ a {
   .turntable-scene {
     min-height: 520px;
   }
+  
+  .turntable-card {
+  position: relative;
+  overflow: hidden;
+  }
 
   .album-stand {
-    top: 10px;
-    width: min(42%, 170px);
+    top: 60px;    
   }
 
   .plinth {

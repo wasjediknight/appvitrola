@@ -61,7 +61,7 @@ function generateRandomString(length = 64) {
 }
 
 async function loginWithSpotify() {
-  if (!config.clientId)) {
+  if (!config.clientId) {
     setStatus('Preencha o clientId em config.js antes de autenticar.');
     alert('Edite o arquivo config.js com seu clientId e redirectUri.');
     return;

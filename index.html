@@ -34,13 +34,20 @@
 
     <main class="player-layout">
       <section class="card turntable-card">
-        <div class="turntable">
-          <div class="plinth">
-            <div id="vinyl" class="vinyl paused">
-              <img id="coverOnDisc" class="cover-on-disc" alt="Capa do disco" />
-              <div class="vinyl-hole"></div>
+        <div class="turntable-scene">
+          <div class="album-stand">
+            <img id="coverStand" class="cover-stand" alt="Capa do álbum em pé" />
+            <div class="album-stand-base"></div>
+          </div>
+
+          <div class="turntable">
+            <div class="plinth">
+              <div id="vinyl" class="vinyl paused">
+                <img id="coverOnDisc" class="cover-on-disc" alt="Capa do disco" />
+                <div class="vinyl-hole"></div>
+              </div>
+              <div class="tonearm"></div>
             </div>
-            <div class="tonearm"></div>
           </div>
         </div>
       </section>
@@ -52,7 +59,7 @@
         <div class="info-content">
           <span id="typeBadge" class="badge">Nada carregado</span>
           <h2 id="title">Escolha uma música ou álbum</h2>
-          <p id="subtitle">A capa aparece ao lado da vitrola e no disco.</p>
+          <p id="subtitle">A capa aparece ao lado da vitrola, em pé atrás dela e no disco.</p>
           <div class="meta-grid">
             <div>
               <span class="meta-label">Artista</span>

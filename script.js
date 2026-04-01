@@ -8,6 +8,7 @@ const els = {
   spotifyUrl: document.getElementById('spotifyUrl'),
   coverImage: document.getElementById('coverImage'),
   coverOnDisc: document.getElementById('coverOnDisc'),
+  coverStand: document.getElementById('coverStand'),
   typeBadge: document.getElementById('typeBadge'),
   title: document.getElementById('title'),
   subtitle: document.getElementById('subtitle'),
@@ -212,6 +213,14 @@ function updateAuthUI(isLoggedIn) {
   els.logoutBtn.hidden = !isLoggedIn;
 }
 
+function clearLoadedMedia() {
+  els.coverImage.removeAttribute('src');
+  els.coverOnDisc.removeAttribute('src');
+  els.coverStand?.removeAttribute('src');
+  els.openSpotify.hidden = true;
+  els.spotifyEmbed.src = '';
+}
+
 function logout() {
   [
     'spotify_access_token',
@@ -222,7 +231,7 @@ function logout() {
 
   updateAuthUI(false);
   setPlayingState(false);
-  els.spotifyEmbed.src = '';
+  clearLoadedMedia();
   setStatus('Sessão encerrada.');
 }
 
@@ -276,14 +285,19 @@ function renderMeta(meta) {
   els.title.textContent = meta.title;
   els.subtitle.textContent =
     meta.kind === 'Música'
-      ? 'A capa foi aplicada no disco e ao lado da vitrola.'
-      : 'O álbum foi carregado com a capa no disco e no painel lateral.';
+      ? 'A capa foi aplicada no disco, na lateral e em pé atrás da vitrola.'
+      : 'O álbum foi carregado com a capa no disco, na lateral e em pé atrás da vitrola.';
 
   els.artist.textContent = meta.artist;
   els.album.textContent = meta.album;
 
   els.coverImage.src = meta.cover;
   els.coverImage.style.display = 'block';
+
+  if (els.coverStand) {
+    els.coverStand.src = meta.cover;
+    els.coverStand.style.display = 'block';
+  }
 
   els.coverOnDisc.src = meta.cover;
   els.coverOnDisc.style.display = 'block';

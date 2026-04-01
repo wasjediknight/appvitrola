@@ -365,14 +365,24 @@ function renderMeta(meta) {
   }
 
   if (els.coverDisc) {
-  els.coverDisc.src = meta.cover;
-  els.coverDisc.style.display = 'block';
+  if (meta.cover) {
+    els.coverDisc.src = meta.cover;
+    els.coverDisc.style.display = 'block';
+  } else {
+    els.coverDisc.removeAttribute('src');
+    els.coverDisc.style.display = 'none';
+  }
 }
 
   if (els.coverInfo) {
+  if (meta.cover) {
     els.coverInfo.src = meta.cover;
     els.coverInfo.style.display = 'block';
+  } else {
+    els.coverInfo.removeAttribute('src');
+    els.coverInfo.style.display = 'none';
   }
+}
 
   if (els.spotifyEmbed) {
     els.spotifyEmbed.src = meta.embed;

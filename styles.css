@@ -203,19 +203,56 @@ button {
   justify-content: center;
 }
 
+.turntable-base {
+  width: 100%;
+  min-height: 500px;
+  border-radius: 28px;
+  position: relative;
+  padding: 28px;
+  background:
+    linear-gradient(145deg, #0c1c2f 0%, #071221 45%, #050d18 100%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.05),
+    inset 0 -18px 30px rgba(0,0,0,0.25),
+    0 20px 40px rgba(0,0,0,0.35);
+  overflow: hidden;
+}
+
+.base-shine {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.05), transparent 22%, transparent 70%, rgba(255,255,255,0.03));
+  pointer-events: none;
+}
+
+.platter-shadow {
+  position: absolute;
+  left: 90px;
+  top: 98px;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,0,0,0.28), rgba(0,0,0,0) 72%);
+  filter: blur(8px);
+  pointer-events: none;
+}
+
 .vinyl-stage {
   width: 100%;
   height: 100%;
-  min-height: 500px;
+  min-height: 440px;
   border-radius: 22px;
   background:
-    radial-gradient(circle at 50% 45%, rgba(18, 46, 84, 0.36), rgba(3, 9, 18, 0) 48%),
+    radial-gradient(circle at 38% 52%, rgba(18, 46, 84, 0.38), rgba(3, 9, 18, 0) 34%),
     linear-gradient(180deg, #041327 0%, #03101f 100%);
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   position: relative;
   overflow: hidden;
+  padding-left: 22px;
 }
 
 .vinyl-stage::after {
@@ -223,14 +260,72 @@ button {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at center, rgba(30,215,96,0.04), transparent 36%);
+    radial-gradient(circle at 38% 52%, rgba(30,215,96,0.05), transparent 28%);
   pointer-events: none;
+}
+
+.tonearm-base {
+  position: absolute;
+  top: 64px;
+  right: 70px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 35%, #516072, #222d3a 70%);
+  box-shadow:
+    inset 0 2px 3px rgba(255,255,255,0.12),
+    0 8px 18px rgba(0,0,0,0.35);
+  z-index: 4;
+}
+
+.tonearm {
+  position: absolute;
+  top: 78px;
+  right: 92px;
+  width: 168px;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #7d8794, #c1c8d2);
+  transform-origin: 100% 50%;
+  transform: rotate(-24deg);
+  transition: transform 0.45s ease;
+  box-shadow: var(--shadow-soft);
+  z-index: 5;
+}
+
+.tonearm::before {
+  content: "";
+  position: absolute;
+  left: -16px;
+  top: -4px;
+  width: 22px;
+  height: 18px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #d4d9df, #858f9d);
+}
+
+.tonearm::after {
+  content: "";
+  position: absolute;
+  left: -24px;
+  top: -1px;
+  width: 10px;
+  height: 12px;
+  border-radius: 2px;
+  background: #d9dee5;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.15);
+}
+
+.tonearm.playing {
+  transform: rotate(-6deg);
 }
 
 /* DISCO */
 .vinyl {
   width: 370px;
   height: 370px;
+  margin-left: 10px;
   border-radius: 50%;
   position: relative;
   display: flex;

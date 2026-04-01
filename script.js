@@ -1,7 +1,5 @@
 const config = window.SPOTIFY_CONFIG || {};
-const scopes = [
-  'user-read-private'
-];
+const scopes = ['user-read-private'];
 
 const els = {
   loginBtn: document.getElementById('loginBtn'),
@@ -29,9 +27,24 @@ function extractSpotifyResource(url) {
   try {
     const parsed = new URL(url.trim());
     const parts = parsed.pathname.split('/').filter(Boolean);
-    const type = parts[0];
-    const id = parts[1];
-    if (!['track', 'album'].includes(type) || !id) return null;
+
+    let type;
+    let id;
+
+    if (parts[0] === 'track' || parts[0] === 'album') {
+      type = parts[0];
+      id = parts[1];
+    } else if (
+      parts[0].startsWith('intl-') &&
+      (parts[1] === 'track' || parts[1] === 'album')
+    ) {
+      type = parts[1];
+      id = parts[2];
+    } else {
+      return null;
+    }
+
+    if (!id) return null;
     return { type, id: id.split('?')[0], url: parsed.toString() };
   } catch {
     return null;
@@ -56,13 +69,15 @@ function generateRandomString(length = 64) {
   let text = '';
   const cryptoArray = new Uint8Array(length);
   crypto.getRandomValues(cryptoArray);
-  cryptoArray.forEach(x => { text += possible[x % possible.length]; });
+  cryptoArray.forEach((x) => {
+    text += possible[x % possible.length];
+  });
   return text;
 }
 
 async function loginWithSpotify() {
-  if (!config.clientId) {
-    setStatus('Preencha o clientId em config.js antes de autenticar.');
+  if (!config.clientId || !config.redirectUri) {
+    setStatus('Preencha o clientId e a redirectUri em config.js antes de autenticar.');
     alert('Edite o arquivo config.js com seu clientId e redirectUri.');
     return;
   }
@@ -85,7 +100,9 @@ async function loginWithSpotify() {
 
 async function exchangeCodeForToken(code) {
   const verifier = localStorage.getItem('spotify_code_verifier');
-  if (!verifier) throw new Error('Code verifier não encontrado.');
+  if (!verifier) {
+    throw new Error('Code verifier não encontrado.');
+  }
 
   const body = new URLSearchParams({
     client_id: config.clientId,
@@ -107,9 +124,13 @@ async function exchangeCodeForToken(code) {
 
   const data = await response.json();
   const expiresAt = Date.now() + (data.expires_in * 1000);
+
   localStorage.setItem('spotify_access_token', data.access_token);
-  if (data.refresh_token) localStorage.setItem('spotify_refresh_token', data.refresh_token);
+  if (data.refresh_token) {
+    localStorage.setItem('spotify_refresh_token', data.refresh_token);
+  }
   localStorage.setItem('spotify_expires_at', String(expiresAt));
+
   return data.access_token;
 }
 
@@ -130,18 +151,28 @@ async function refreshAccessToken() {
   });
 
   if (!response.ok) return null;
+
   const data = await response.json();
   const expiresAt = Date.now() + (data.expires_in * 1000);
+
   localStorage.setItem('spotify_access_token', data.access_token);
   localStorage.setItem('spotify_expires_at', String(expiresAt));
-  if (data.refresh_token) localStorage.setItem('spotify_refresh_token', data.refresh_token);
+
+  if (data.refresh_token) {
+    localStorage.setItem('spotify_refresh_token', data.refresh_token);
+  }
+
   return data.access_token;
 }
 
 async function getValidAccessToken() {
   const token = localStorage.getItem('spotify_access_token');
   const expiresAt = Number(localStorage.getItem('spotify_expires_at') || 0);
-  if (token && Date.now() < expiresAt - 60_000) return token;
+
+  if (token && Date.now() < expiresAt - 60000) {
+    return token;
+  }
+
   return refreshAccessToken();
 }
 
@@ -156,17 +187,23 @@ function logout() {
     'spotify_refresh_token',
     'spotify_expires_at',
     'spotify_code_verifier'
-  ].forEach(key => localStorage.removeItem(key));
+  ].forEach((key) => localStorage.removeItem(key));
+
   updateAuthUI(false);
   setStatus('Sessão encerrada.');
 }
 
 async function spotifyFetch(path) {
   const token = await getValidAccessToken();
-  if (!token) throw new Error('Você precisa entrar com Spotify primeiro.');
+
+  if (!token) {
+    throw new Error('Você precisa entrar com Spotify primeiro.');
+  }
 
   const response = await fetch(`https://api.spotify.com/v1${path}`, {
-    headers: { Authorization: `Bearer ${token}` }
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
   });
 
   if (!response.ok) {
@@ -182,7 +219,7 @@ function normalizeMeta(type, data, originalUrl) {
     return {
       kind: 'Música',
       title: data.name,
-      artist: data.artists?.map(a => a.name).join(', ') || '—',
+      artist: data.artists?.map((a) => a.name).join(', ') || '—',
       album: data.album?.name || '—',
       cover: data.album?.images?.[0]?.url || '',
       embed: `https://open.spotify.com/embed/track/${data.id}?utm_source=generator`,
@@ -193,7 +230,7 @@ function normalizeMeta(type, data, originalUrl) {
   return {
     kind: 'Álbum',
     title: data.name,
-    artist: data.artists?.map(a => a.name).join(', ') || '—',
+    artist: data.artists?.map((a) => a.name).join(', ') || '—',
     album: data.name,
     cover: data.images?.[0]?.url || '',
     embed: `https://open.spotify.com/embed/album/${data.id}?utm_source=generator`,
@@ -204,22 +241,31 @@ function normalizeMeta(type, data, originalUrl) {
 function renderMeta(meta) {
   els.typeBadge.textContent = meta.kind;
   els.title.textContent = meta.title;
-  els.subtitle.textContent = meta.kind === 'Música'
-    ? 'A capa foi aplicada no disco e ao lado da vitrola.'
-    : 'O álbum foi carregado com a capa no disco e no painel lateral.';
+  els.subtitle.textContent =
+    meta.kind === 'Música'
+      ? 'A capa foi aplicada no disco e ao lado da vitrola.'
+      : 'O álbum foi carregado com a capa no disco e no painel lateral.';
+
   els.artist.textContent = meta.artist;
   els.album.textContent = meta.album;
+
   els.coverImage.src = meta.cover;
+  els.coverImage.style.display = 'block';
+
   els.coverOnDisc.src = meta.cover;
+  els.coverOnDisc.style.display = 'block';
+
   els.spotifyEmbed.src = meta.embed;
   els.openSpotify.href = meta.openUrl;
   els.openSpotify.hidden = false;
+
   els.vinyl.classList.remove('paused');
   els.vinyl.classList.add('spinning');
 }
 
 async function loadSpotifyUrl() {
   const resource = extractSpotifyResource(els.spotifyUrl.value);
+
   if (!resource) {
     setStatus('Cole uma URL válida de track ou album do Spotify.');
     return;
@@ -261,14 +307,19 @@ async function bootstrapAuth() {
 
   const token = await getValidAccessToken();
   updateAuthUI(Boolean(token));
-  if (token) setStatus('Conectado ao Spotify. Agora cole uma URL.');
+
+  if (token) {
+    setStatus('Conectado ao Spotify. Agora cole uma URL.');
+  }
 }
 
 els.loginBtn.addEventListener('click', loginWithSpotify);
 els.logoutBtn.addEventListener('click', logout);
 els.loadBtn.addEventListener('click', loadSpotifyUrl);
 els.spotifyUrl.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') loadSpotifyUrl();
+  if (e.key === 'Enter') {
+    loadSpotifyUrl();
+  }
 });
 
 bootstrapAuth();

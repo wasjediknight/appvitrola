@@ -6,17 +6,24 @@
 }
 
 :root {
-  --bg: #050b14;
+  --bg: #040a13;
   --bg-2: #071325;
-  --card: #07172b;
-  --card-2: #08111f;
+  --panel: rgba(8, 20, 38, 0.88);
+  --panel-2: rgba(5, 16, 29, 0.96);
   --line: rgba(120, 170, 255, 0.14);
+  --line-strong: rgba(120, 170, 255, 0.22);
   --text: #ffffff;
   --muted: #a9b4c3;
+  --muted-2: #7d8b9b;
   --green: #1ed760;
   --green-2: #19c753;
   --shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
+  --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.24);
   --radius: 24px;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -44,15 +51,16 @@ body {
 }
 
 .topbar h1 {
-  font-size: 2rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-size: clamp(2.1rem, 4vw, 3rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1;
 }
 
 .topbar p {
-  margin-top: 4px;
+  margin-top: 6px;
   color: var(--muted);
-  font-size: 0.95rem;
+  font-size: 0.98rem;
 }
 
 .actions {
@@ -65,30 +73,36 @@ button {
   border: none;
   outline: none;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: transform 0.22s ease, filter 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
 }
 
 .primary,
 .ghost,
 .row button {
-  height: 44px;
-  padding: 0 18px;
+  height: 46px;
+  padding: 0 20px;
   border-radius: 999px;
-  font-weight: 700;
-  font-size: 0.95rem;
+  font-weight: 800;
+  font-size: 0.96rem;
 }
 
 .primary,
 .row button {
   background: linear-gradient(180deg, var(--green), var(--green-2));
   color: #06250f;
-  box-shadow: 0 10px 20px rgba(30, 215, 96, 0.18);
+  box-shadow: 0 10px 22px rgba(30, 215, 96, 0.22);
 }
 
 .primary:hover,
 .row button:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   filter: brightness(1.03);
+}
+
+.primary:active,
+.row button:active,
+.ghost:active {
+  transform: translateY(0);
 }
 
 .ghost {
@@ -112,13 +126,14 @@ button {
   border-radius: var(--radius);
   padding: 18px;
   box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
 }
 
 .control-card label {
   display: block;
   margin-bottom: 12px;
   color: #dfe8f4;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .row {
@@ -128,13 +143,14 @@ button {
 
 .row input {
   flex: 1;
-  height: 48px;
+  height: 50px;
   border-radius: 14px;
   border: 1px solid rgba(255,255,255,0.08);
   background: rgba(255,255,255,0.04);
   color: white;
   padding: 0 16px;
-  font-size: 0.97rem;
+  font-size: 0.98rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
 .row input::placeholder {
@@ -143,13 +159,14 @@ button {
 
 .row input:focus {
   outline: none;
+  background: rgba(255,255,255,0.06);
   border-color: rgba(30, 215, 96, 0.45);
   box-shadow: 0 0 0 3px rgba(30, 215, 96, 0.12);
 }
 
 .status-text {
   margin-top: 12px;
-  font-size: 0.95rem;
+  font-size: 0.94rem;
   color: var(--muted);
 }
 
@@ -168,6 +185,13 @@ button {
   border-radius: 28px;
   box-shadow: var(--shadow);
   overflow: hidden;
+  transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: var(--line-strong);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.52);
 }
 
 /* ESQUERDA - VITROLA */
@@ -185,12 +209,22 @@ button {
   min-height: 500px;
   border-radius: 22px;
   background:
-    radial-gradient(circle at 50% 45%, rgba(18, 46, 84, 0.35), rgba(3, 9, 18, 0) 48%),
+    radial-gradient(circle at 50% 45%, rgba(18, 46, 84, 0.36), rgba(3, 9, 18, 0) 48%),
     linear-gradient(180deg, #041327 0%, #03101f 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
+  overflow: hidden;
+}
+
+.vinyl-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at center, rgba(30,215,96,0.04), transparent 36%);
+  pointer-events: none;
 }
 
 /* DISCO */
@@ -215,6 +249,13 @@ button {
   animation-play-state: paused;
 }
 
+.vinyl.spinning {
+  box-shadow:
+    0 0 40px rgba(30, 215, 96, 0.14),
+    inset 0 0 22px rgba(255,255,255,0.04),
+    0 18px 40px rgba(0, 0, 0, 0.55);
+}
+
 .vinyl::before {
   content: "";
   position: absolute;
@@ -223,10 +264,11 @@ button {
   background:
     repeating-radial-gradient(
       circle at center,
-      rgba(255,255,255,0.045) 0 2px,
+      rgba(255,255,255,0.04) 0 2px,
       rgba(0,0,0,0) 2px 8px
     );
-  opacity: 0.5;
+  opacity: 0.7;
+  animation: grooves 4s linear infinite;
 }
 
 .vinyl::after {
@@ -248,6 +290,49 @@ button {
   position: relative;
   z-index: 2;
   box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+}
+
+/* BRAÇO DA VITROLA */
+.tonearm {
+  position: absolute;
+  top: 58px;
+  right: 78px;
+  width: 150px;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #7d8794, #c1c8d2);
+  transform-origin: 92% 50%;
+  transform: rotate(-28deg);
+  transition: transform 0.45s ease;
+  box-shadow: var(--shadow-soft);
+  z-index: 4;
+}
+
+.tonearm::before {
+  content: "";
+  position: absolute;
+  right: -10px;
+  top: -6px;
+  width: 20px;
+  height: 22px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #d4d9df, #858f9d);
+}
+
+.tonearm::after {
+  content: "";
+  position: absolute;
+  left: -14px;
+  top: -7px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #2e3745;
+  box-shadow: 0 0 0 6px rgba(255,255,255,0.04);
+}
+
+.tonearm.playing {
+  transform: rotate(-8deg);
 }
 
 /* DIREITA - INFO */
@@ -295,9 +380,9 @@ button {
 }
 
 .info-card h2 {
-  font-size: clamp(2rem, 4vw, 3.1rem);
-  line-height: 1.05;
-  letter-spacing: -0.03em;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
   margin-bottom: 14px;
   max-width: 520px;
 }
@@ -336,6 +421,11 @@ button {
   font-weight: 800;
   text-decoration: underline;
   text-underline-offset: 3px;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.info-card a:hover {
+  opacity: 0.9;
 }
 
 .info-card a[hidden] {
@@ -350,6 +440,11 @@ button {
   border-radius: 24px;
   padding: 16px;
   box-shadow: var(--shadow);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.player:hover {
+  border-color: var(--line-strong);
 }
 
 .player iframe {
@@ -368,26 +463,25 @@ img {
   display: block;
 }
 
-/* trava qualquer imagem solta fora do app */
 body > img {
   display: none;
 }
 
-/* caso exista alguma imagem antiga herdada */
 .hero-cover,
 .main-cover,
 .cover-large {
   display: none !important;
 }
 
-/* ANIMAÇÃO */
+/* ANIMAÇÕES */
 @keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes grooves {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 /* TABLET */
@@ -412,6 +506,11 @@ body > img {
 
   .info-card h2 {
     font-size: 2.3rem;
+  }
+
+  .tonearm {
+    right: 84px;
+    top: 48px;
   }
 }
 
@@ -447,6 +546,12 @@ body > img {
   .vinyl img {
     width: 110px;
     height: 110px;
+  }
+
+  .tonearm {
+    width: 116px;
+    top: 62px;
+    right: 24px;
   }
 
   .meta {

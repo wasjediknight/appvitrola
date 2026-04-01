@@ -40,12 +40,12 @@ function extractSpotifyResource(url) {
     let type;
     let id;
 
-    if (parts[0] === 'track' || parts[0] === 'album') {
+    if (['track', 'album', 'playlist'].includes(parts[0])) {
       type = parts[0];
       id = parts[1];
     } else if (
       parts[0].startsWith('intl-') &&
-      (parts[1] === 'track' || parts[1] === 'album')
+      ['track', 'album', 'playlist'].includes(parts[1])
     ) {
       type = parts[1];
       id = parts[2];
@@ -225,11 +225,11 @@ function updateAuthUI(isLoggedIn) {
 
 function clearLoadedMedia() {
   if (els.coverDisc) {
-    els.coverDisc.removeAttribute('src');
+    els.coverDisc.src = 'https://placehold.co/300x300?text=Capa';
   }
 
   if (els.coverInfo) {
-    els.coverInfo.removeAttribute('src');
+    els.coverInfo.src = 'https://placehold.co/300x300?text=Capa';
   }
 
   if (els.openSpotify) {
@@ -246,12 +246,12 @@ function clearLoadedMedia() {
   }
 
   if (els.title) {
-    els.title.textContent = 'Título da faixa';
+    els.title.textContent = 'Título do conteúdo';
   }
 
   if (els.subtitle) {
     els.subtitle.textContent =
-      'A capa será aplicada no disco, na lateral e em pé atrás da vitrola.';
+      'A capa será aplicada no disco e exibida no painel lateral da vitrola.';
   }
 
   if (els.artist) {
@@ -311,6 +311,18 @@ function normalizeMeta(type, data, originalUrl) {
     };
   }
 
+  if (type === 'playlist') {
+    return {
+      kind: 'Playlist',
+      title: data.name,
+      artist: data.owner?.display_name || 'Spotify',
+      album: `${data.tracks?.total || 0} faixas`,
+      cover: data.images?.[0]?.url || '',
+      embed: `https://open.spotify.com/embed/playlist/${data.id}?utm_source=generator`,
+      openUrl: originalUrl || data.external_urls?.spotify || '#'
+    };
+  }
+
   return {
     kind: 'Álbum',
     title: data.name,
@@ -332,10 +344,16 @@ function renderMeta(meta) {
   }
 
   if (els.subtitle) {
-    els.subtitle.textContent =
-      meta.kind === 'Música'
-        ? 'A capa foi aplicada no disco, na lateral e em pé atrás da vitrola.'
-        : 'O álbum foi carregado com a capa no disco, na lateral e em pé atrás da vitrola.';
+    if (meta.kind === 'Música') {
+      els.subtitle.textContent =
+        'A música foi carregada com a capa aplicada no disco e exibida no painel lateral.';
+    } else if (meta.kind === 'Playlist') {
+      els.subtitle.textContent =
+        'A playlist foi carregada com a capa aplicada no disco e pronta para reprodução no player abaixo.';
+    } else {
+      els.subtitle.textContent =
+        'O álbum foi carregado com a capa aplicada no disco e exibida no painel lateral da vitrola.';
+    }
   }
 
   if (els.artist) {
@@ -372,7 +390,7 @@ async function loadSpotifyUrl() {
   const resource = extractSpotifyResource(els.spotifyUrl?.value || '');
 
   if (!resource) {
-    setStatus('Cole uma URL válida de track ou album do Spotify.');
+    setStatus('Cole uma URL válida de track, album ou playlist do Spotify.');
     return;
   }
 
@@ -415,9 +433,9 @@ async function bootstrapAuth() {
   updateAuthUI(Boolean(token));
 
   if (token) {
-    setStatus('Conectado ao Spotify. Agora cole uma URL.');
+    setStatus('Conectado ao Spotify. Cole uma URL de música, álbum ou playlist.');
   } else {
-    setStatus('Faça login no Spotify para carregar uma música ou álbum.');
+    setStatus('Faça login no Spotify para carregar uma música, álbum ou playlist.');
   }
 }
 

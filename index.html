@@ -10,8 +10,8 @@
   <div class="app-shell">
     <header class="topbar">
       <div>
-        <h1>Vitrola Spotify</h1>
-        <p>Simulação de vitrola integrada ao Spotify</p>
+        <h1>App Vitrola</h1>
+        <p>Tenha o clima do LP integrado ao Spotify</p>
       </div>
 
       <div class="actions">
@@ -22,7 +22,7 @@
 
     <section class="controls">
       <div class="control-card">
-        <label for="spotifyUrl">Cole a URL de uma música ou álbum do Spotify</label>
+        <label for="spotifyUrl">Cole a URL de uma música, álbum ou playlist do Spotify</label>
 
         <div class="row">
           <input
@@ -34,7 +34,7 @@
         </div>
 
         <p id="statusText" class="status-text">
-          Faça login no Spotify para carregar uma música ou álbum.
+          Faça login no Spotify para carregar uma música, álbum ou playlist.
         </p>
       </div>
     </section>
@@ -42,6 +42,8 @@
     <main class="main-grid">
       <section class="card turntable-card">
         <div class="vinyl-stage">
+          <div class="tonearm"></div>
+
           <div id="vinyl" class="vinyl paused">
             <img
               id="coverDisc"
@@ -58,24 +60,24 @@
             id="coverInfo"
             class="cover-thumb"
             src="https://placehold.co/300x300?text=Capa"
-            alt="Capa do álbum"
+            alt="Capa do conteúdo"
           />
 
           <span id="mediaType" class="badge">Música</span>
 
-          <h2 id="title">Título da faixa</h2>
+          <h2 id="title">Título do conteúdo</h2>
 
           <p id="description">
-            A capa será aplicada no disco e no painel lateral da vitrola.
+            A capa será aplicada no disco e exibida no painel lateral da vitrola.
           </p>
 
           <div class="meta">
             <div>
-              <span>Artista</span>
+              <span>Artista / Autor</span>
               <strong id="artist">Artista</strong>
             </div>
             <div>
-              <span>Álbum</span>
+              <span>Álbum / Info</span>
               <strong id="album">Álbum</strong>
             </div>
           </div>

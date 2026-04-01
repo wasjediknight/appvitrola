@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vitrola Spotify</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <h1>Vitrola Spotify</h1>
+        <p>Simulação de vitrola integrada ao Spotify</p>
+      </div>
+      <div class="actions">
+        <button id="loginBtn" class="primary">Entrar com Spotify</button>
+        <button id="logoutBtn" class="ghost" hidden>Sair</button>
+      </div>
+    </header>
+
+    <section class="controls">
+      <div class="card control-card">
+        <label for="spotifyUrl">Cole a URL de uma música ou álbum do Spotify</label>
+        <div class="row">
+          <input id="spotifyUrl" type="text" placeholder="https://open.spotify.com/track/..." />
+          <button id="loadBtn" class="primary">Carregar</button>
+        </div>
+        <small>
+          Compatível com links de <strong>track</strong> e <strong>album</strong>. O player usa o embed do Spotify; os metadados e a capa vêm da Web API.
+        </small>
+      </div>
+    </section>
+
+    <main class="stage">
+      <section class="card turntable-card">
+        <div class="turntable">
+          <div id="vinyl" class="vinyl paused">
+            <img id="coverOnDisc" alt="Capa do disco" />
+            <div class="vinyl-hole"></div>
+          </div>
+          <div class="tonearm"></div>
+        </div>
+      </section>
+
+      <section class="card info-card">
+        <div class="cover-side">
+          <img id="coverImage" alt="Capa do álbum" />
+        </div>
+        <div class="meta">
+          <span id="typeBadge" class="badge">Nada carregado</span>
+          <h2 id="title">Escolha uma música ou álbum</h2>
+          <p id="subtitle">A capa aparece ao lado da vitrola e no disco.</p>
+          <div class="meta-grid">
+            <div>
+              <span class="meta-label">Artista</span>
+              <strong id="artist">—</strong>
+            </div>
+            <div>
+              <span class="meta-label">Álbum</span>
+              <strong id="album">—</strong>
+            </div>
+          </div>
+          <a id="openSpotify" class="open-link" href="#" target="_blank" rel="noopener noreferrer" hidden>Abrir no Spotify</a>
+        </div>
+      </section>
+    </main>
+
+    <section class="player-wrap card">
+      <iframe
+        id="spotifyEmbed"
+        title="Spotify Player"
+        src=""
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        loading="lazy">
+      </iframe>
+    </section>
+
+    <section class="card status-card">
+      <strong>Status:</strong>
+      <span id="statusText">Faça login e cole uma URL do Spotify.</span>
+    </section>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -169,6 +169,11 @@ a {
   min-width: 0;
 }
 
+.turntable-card {
+  position: relative;
+  overflow: hidden;
+  }
+
 /* Cena da vitrola */
 .turntable-scene {
   position: relative;
@@ -575,11 +580,6 @@ a {
     min-height: 520px;
   }
   
-  .turntable-card {
-  position: relative;
-  overflow: hidden;
-  }
-
   .album-stand {
     top: 60px;    
   }
@@ -666,3 +666,4 @@ a {
     width: 25%;
   }
 }
+

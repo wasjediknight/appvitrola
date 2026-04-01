@@ -7,7 +7,7 @@ const els = {
   loadBtn: document.getElementById('loadBtn'),
   spotifyUrl: document.getElementById('spotifyUrl'),
 
-  coverDisc: document.getElementById('coverDisc'),
+  coverDisc: document.getElementById('coverOverlay'),
   coverInfo: document.getElementById('coverInfo'),
 
   typeBadge: document.getElementById('mediaType'),
@@ -365,9 +365,9 @@ function renderMeta(meta) {
   }
 
   if (els.coverDisc) {
-    document.getElementById("coverOverlay").src = meta.cover;
-    els.coverDisc.style.display = 'block';
-  }
+  els.coverDisc.src = meta.cover;
+  els.coverDisc.style.display = 'block';
+}
 
   if (els.coverInfo) {
     els.coverInfo.src = meta.cover;

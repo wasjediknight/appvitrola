@@ -6,23 +6,30 @@ const els = {
   logoutBtn: document.getElementById('logoutBtn'),
   loadBtn: document.getElementById('loadBtn'),
   spotifyUrl: document.getElementById('spotifyUrl'),
-  coverImage: document.getElementById('coverImage'),
-  coverOnDisc: document.getElementById('coverOnDisc'),
-  coverStand: document.getElementById('coverStand'),
-  typeBadge: document.getElementById('typeBadge'),
+
+  coverDisc: document.getElementById('coverDisc'),
+  coverInfo: document.getElementById('coverInfo'),
+
+  typeBadge: document.getElementById('mediaType'),
   title: document.getElementById('title'),
-  subtitle: document.getElementById('subtitle'),
+  subtitle: document.getElementById('description'),
   artist: document.getElementById('artist'),
   album: document.getElementById('album'),
+
   spotifyEmbed: document.getElementById('spotifyEmbed'),
-  openSpotify: document.getElementById('openSpotify'),
+  openSpotify: document.getElementById('spotifyLink'),
+
   statusText: document.getElementById('statusText'),
   vinyl: document.getElementById('vinyl'),
   tonearm: document.querySelector('.tonearm')
 };
 
 function setStatus(text) {
-  els.statusText.textContent = text;
+  if (els.statusText) {
+    els.statusText.textContent = text;
+  } else {
+    console.log(text);
+  }
 }
 
 function extractSpotifyResource(url) {
@@ -85,12 +92,15 @@ function generateRandomString(length = 64) {
 }
 
 function setPlayingState(isPlaying) {
+  if (!els.vinyl) return;
+
   if (isPlaying) {
     els.vinyl.classList.remove('paused');
     els.vinyl.classList.add('spinning');
     els.tonearm?.classList.add('playing');
   } else {
     els.vinyl.classList.add('paused');
+    els.vinyl.classList.remove('spinning');
     els.tonearm?.classList.remove('playing');
   }
 }
@@ -209,16 +219,48 @@ async function getValidAccessToken() {
 }
 
 function updateAuthUI(isLoggedIn) {
-  els.loginBtn.hidden = isLoggedIn;
-  els.logoutBtn.hidden = !isLoggedIn;
+  if (els.loginBtn) els.loginBtn.hidden = isLoggedIn;
+  if (els.logoutBtn) els.logoutBtn.hidden = !isLoggedIn;
 }
 
 function clearLoadedMedia() {
-  els.coverImage.removeAttribute('src');
-  els.coverOnDisc.removeAttribute('src');
-  els.coverStand?.removeAttribute('src');
-  els.openSpotify.hidden = true;
-  els.spotifyEmbed.src = '';
+  if (els.coverDisc) {
+    els.coverDisc.removeAttribute('src');
+  }
+
+  if (els.coverInfo) {
+    els.coverInfo.removeAttribute('src');
+  }
+
+  if (els.openSpotify) {
+    els.openSpotify.hidden = true;
+    els.openSpotify.removeAttribute('href');
+  }
+
+  if (els.spotifyEmbed) {
+    els.spotifyEmbed.src = '';
+  }
+
+  if (els.typeBadge) {
+    els.typeBadge.textContent = 'Música';
+  }
+
+  if (els.title) {
+    els.title.textContent = 'Título da faixa';
+  }
+
+  if (els.subtitle) {
+    els.subtitle.textContent =
+      'A capa será aplicada no disco, na lateral e em pé atrás da vitrola.';
+  }
+
+  if (els.artist) {
+    els.artist.textContent = 'Artista';
+  }
+
+  if (els.album) {
+    els.album.textContent = 'Álbum';
+  }
 }
 
 function logout() {
@@ -281,36 +323,53 @@ function normalizeMeta(type, data, originalUrl) {
 }
 
 function renderMeta(meta) {
-  els.typeBadge.textContent = meta.kind;
-  els.title.textContent = meta.title;
-  els.subtitle.textContent =
-    meta.kind === 'Música'
-      ? 'A capa foi aplicada no disco, na lateral e em pé atrás da vitrola.'
-      : 'O álbum foi carregado com a capa no disco, na lateral e em pé atrás da vitrola.';
-
-  els.artist.textContent = meta.artist;
-  els.album.textContent = meta.album;
-
-  els.coverImage.src = meta.cover;
-  els.coverImage.style.display = 'block';
-
-  if (els.coverStand) {
-    els.coverStand.src = meta.cover;
-    els.coverStand.style.display = 'block';
+  if (els.typeBadge) {
+    els.typeBadge.textContent = meta.kind;
   }
 
-  els.coverOnDisc.src = meta.cover;
-  els.coverOnDisc.style.display = 'block';
+  if (els.title) {
+    els.title.textContent = meta.title;
+  }
 
-  els.spotifyEmbed.src = meta.embed;
-  els.openSpotify.href = meta.openUrl;
-  els.openSpotify.hidden = false;
+  if (els.subtitle) {
+    els.subtitle.textContent =
+      meta.kind === 'Música'
+        ? 'A capa foi aplicada no disco, na lateral e em pé atrás da vitrola.'
+        : 'O álbum foi carregado com a capa no disco, na lateral e em pé atrás da vitrola.';
+  }
+
+  if (els.artist) {
+    els.artist.textContent = meta.artist;
+  }
+
+  if (els.album) {
+    els.album.textContent = meta.album;
+  }
+
+  if (els.coverDisc) {
+    els.coverDisc.src = meta.cover;
+    els.coverDisc.style.display = 'block';
+  }
+
+  if (els.coverInfo) {
+    els.coverInfo.src = meta.cover;
+    els.coverInfo.style.display = 'block';
+  }
+
+  if (els.spotifyEmbed) {
+    els.spotifyEmbed.src = meta.embed;
+  }
+
+  if (els.openSpotify) {
+    els.openSpotify.href = meta.openUrl;
+    els.openSpotify.hidden = false;
+  }
 
   setPlayingState(true);
 }
 
 async function loadSpotifyUrl() {
-  const resource = extractSpotifyResource(els.spotifyUrl.value);
+  const resource = extractSpotifyResource(els.spotifyUrl?.value || '');
 
   if (!resource) {
     setStatus('Cole uma URL válida de track ou album do Spotify.');
@@ -357,17 +416,29 @@ async function bootstrapAuth() {
 
   if (token) {
     setStatus('Conectado ao Spotify. Agora cole uma URL.');
+  } else {
+    setStatus('Faça login no Spotify para carregar uma música ou álbum.');
   }
 }
 
-els.loginBtn.addEventListener('click', loginWithSpotify);
-els.logoutBtn.addEventListener('click', logout);
-els.loadBtn.addEventListener('click', loadSpotifyUrl);
+if (els.loginBtn) {
+  els.loginBtn.addEventListener('click', loginWithSpotify);
+}
 
-els.spotifyUrl.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') {
-    loadSpotifyUrl();
-  }
-});
+if (els.logoutBtn) {
+  els.logoutBtn.addEventListener('click', logout);
+}
+
+if (els.loadBtn) {
+  els.loadBtn.addEventListener('click', loadSpotifyUrl);
+}
+
+if (els.spotifyUrl) {
+  els.spotifyUrl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      loadSpotifyUrl();
+    }
+  });
+}
 
 bootstrapAuth();

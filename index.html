@@ -13,6 +13,7 @@
         <h1>Vitrola Spotify</h1>
         <p>Simulação de vitrola integrada ao Spotify</p>
       </div>
+
       <div class="actions">
         <button id="loginBtn" class="primary">Entrar com Spotify</button>
         <button id="logoutBtn" class="ghost" hidden>Sair</button>
@@ -20,80 +21,86 @@
     </header>
 
     <section class="controls">
-      <div class="card control-card">
+      <div class="control-card">
         <label for="spotifyUrl">Cole a URL de uma música ou álbum do Spotify</label>
+
         <div class="row">
-          <input id="spotifyUrl" type="text" placeholder="https://open.spotify.com/track/..." />
-          <button id="loadBtn" class="primary">Carregar</button>
+          <input
+            id="spotifyUrl"
+            type="text"
+            placeholder="https://open.spotify.com/track/..."
+          />
+          <button id="loadBtn">Carregar</button>
         </div>
-        <small>
-          Compatível com links de <strong>track</strong> e <strong>album</strong>. O player usa o embed do Spotify; os metadados e a capa vêm da Web API.
-        </small>
+
+        <p id="statusText" class="status-text">
+          Faça login no Spotify para carregar uma música ou álbum.
+        </p>
       </div>
     </section>
 
-    <main class="player-layout">
+    <main class="main-grid">
       <section class="card turntable-card">
-  <div class="turntable-scene">
-
-    <!-- CAPA EM PÉ -->
-    <div class="album-stand">
-      <img id="coverStand" class="cover-stand" alt="Capa do álbum" />
-      <div class="album-stand-base"></div>
-    </div>
-
-    <!-- VITROLA -->
-    <div class="turntable">
-      <div class="plinth">
-        <div id="vinyl" class="vinyl paused">
-          <img id="coverOnDisc" class="cover-on-disc" />
-          <div class="vinyl-hole"></div>
+        <div class="vinyl-stage">
+          <div id="vinyl" class="vinyl paused">
+            <img
+              id="coverDisc"
+              src="https://placehold.co/300x300?text=Capa"
+              alt="Capa no disco"
+            />
+          </div>
         </div>
-        <div class="tonearm"></div>
-      </div>
-    </div>
-
-  </div>
-</section>
+      </section>
 
       <section class="card info-card">
-        <div class="info-cover-wrap">
-          <img id="coverImage" class="info-cover" alt="Capa do álbum" />
-        </div>
-        <div class="info-content">
-          <span id="typeBadge" class="badge">Nada carregado</span>
-          <h2 id="title">Escolha uma música ou álbum</h2>
-          <p id="subtitle">A capa aparece ao lado da vitrola, em pé atrás dela e no disco.</p>
-          <div class="meta-grid">
+        <div class="info-wrap">
+          <img
+            id="coverInfo"
+            class="cover-thumb"
+            src="https://placehold.co/300x300?text=Capa"
+            alt="Capa do álbum"
+          />
+
+          <span id="mediaType" class="badge">Música</span>
+
+          <h2 id="title">Título da faixa</h2>
+
+          <p id="description">
+            A capa será aplicada no disco e no painel lateral da vitrola.
+          </p>
+
+          <div class="meta">
             <div>
-              <span class="meta-label">Artista</span>
-              <strong id="artist">—</strong>
+              <span>Artista</span>
+              <strong id="artist">Artista</strong>
             </div>
             <div>
-              <span class="meta-label">Álbum</span>
-              <strong id="album">—</strong>
+              <span>Álbum</span>
+              <strong id="album">Álbum</strong>
             </div>
           </div>
-          <a id="openSpotify" class="open-link" href="#" target="_blank" rel="noopener noreferrer" hidden>
+
+          <a
+            id="spotifyLink"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            hidden
+          >
             Abrir no Spotify
           </a>
         </div>
       </section>
     </main>
 
-    <section class="player-wrap card">
+    <section class="player">
       <iframe
         id="spotifyEmbed"
-        title="Spotify Player"
         src=""
+        title="Spotify Embed Player"
         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-        loading="lazy">
-      </iframe>
-    </section>
-
-    <section class="card status-card">
-      <strong>Status:</strong>
-      <span id="statusText">Faça login e cole uma URL do Spotify.</span>
+        loading="lazy"
+      ></iframe>
     </section>
   </div>
 

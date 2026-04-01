@@ -142,8 +142,15 @@ button {
 }
 
 .row input:focus {
+  outline: none;
   border-color: rgba(30, 215, 96, 0.45);
   box-shadow: 0 0 0 3px rgba(30, 215, 96, 0.12);
+}
+
+.status-text {
+  margin-top: 12px;
+  font-size: 0.95rem;
+  color: var(--muted);
 }
 
 /* GRID PRINCIPAL */
@@ -264,8 +271,7 @@ button {
   justify-content: center;
 }
 
-.info-card .cover-thumb,
-.info-card img {
+.info-card .cover-thumb {
   width: 180px;
   height: 180px;
   object-fit: cover;
@@ -332,6 +338,10 @@ button {
   text-underline-offset: 3px;
 }
 
+.info-card a[hidden] {
+  display: none;
+}
+
 /* PLAYER */
 .player {
   margin-top: 20px;
@@ -354,14 +364,20 @@ button {
 /* IMAGENS GERAIS */
 img {
   max-width: 100%;
+  height: auto;
   display: block;
 }
 
-/* ESCONDE IMAGEM PRINCIPAL GIGANTE FORA DO LAYOUT */
+/* trava qualquer imagem solta fora do app */
+body > img {
+  display: none;
+}
+
+/* caso exista alguma imagem antiga herdada */
 .hero-cover,
 .main-cover,
 .cover-large {
-  display: none;
+  display: none !important;
 }
 
 /* ANIMAÇÃO */
@@ -389,8 +405,7 @@ img {
     min-height: 420px;
   }
 
-  .info-card .cover-thumb,
-  .info-card img {
+  .info-card .cover-thumb {
     width: 130px;
     height: 130px;
   }

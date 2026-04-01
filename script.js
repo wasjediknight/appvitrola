@@ -16,7 +16,8 @@ const els = {
   spotifyEmbed: document.getElementById('spotifyEmbed'),
   openSpotify: document.getElementById('openSpotify'),
   statusText: document.getElementById('statusText'),
-  vinyl: document.getElementById('vinyl')
+  vinyl: document.getElementById('vinyl'),
+  tonearm: document.querySelector('.tonearm')
 };
 
 function setStatus(text) {
@@ -45,7 +46,12 @@ function extractSpotifyResource(url) {
     }
 
     if (!id) return null;
-    return { type, id: id.split('?')[0], url: parsed.toString() };
+
+    return {
+      type,
+      id: id.split('?')[0],
+      url: parsed.toString()
+    };
   } catch {
     return null;
   }
@@ -69,10 +75,23 @@ function generateRandomString(length = 64) {
   let text = '';
   const cryptoArray = new Uint8Array(length);
   crypto.getRandomValues(cryptoArray);
+
   cryptoArray.forEach((x) => {
     text += possible[x % possible.length];
   });
+
   return text;
+}
+
+function setPlayingState(isPlaying) {
+  if (isPlaying) {
+    els.vinyl.classList.remove('paused');
+    els.vinyl.classList.add('spinning');
+    els.tonearm?.classList.add('playing');
+  } else {
+    els.vinyl.classList.add('paused');
+    els.tonearm?.classList.remove('playing');
+  }
 }
 
 async function loginWithSpotify() {
@@ -100,6 +119,7 @@ async function loginWithSpotify() {
 
 async function exchangeCodeForToken(code) {
   const verifier = localStorage.getItem('spotify_code_verifier');
+
   if (!verifier) {
     throw new Error('Code verifier não encontrado.');
   }
@@ -114,7 +134,9 @@ async function exchangeCodeForToken(code) {
 
   const response = await fetch('https://accounts.spotify.com/api/token', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
     body
   });
 
@@ -123,12 +145,14 @@ async function exchangeCodeForToken(code) {
   }
 
   const data = await response.json();
-  const expiresAt = Date.now() + (data.expires_in * 1000);
+  const expiresAt = Date.now() + data.expires_in * 1000;
 
   localStorage.setItem('spotify_access_token', data.access_token);
+
   if (data.refresh_token) {
     localStorage.setItem('spotify_refresh_token', data.refresh_token);
   }
+
   localStorage.setItem('spotify_expires_at', String(expiresAt));
 
   return data.access_token;
@@ -136,7 +160,10 @@ async function exchangeCodeForToken(code) {
 
 async function refreshAccessToken() {
   const refreshToken = localStorage.getItem('spotify_refresh_token');
-  if (!refreshToken) return null;
+
+  if (!refreshToken) {
+    return null;
+  }
 
   const body = new URLSearchParams({
     client_id: config.clientId,
@@ -146,14 +173,18 @@ async function refreshAccessToken() {
 
   const response = await fetch('https://accounts.spotify.com/api/token', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
     body
   });
 
-  if (!response.ok) return null;
+  if (!response.ok) {
+    return null;
+  }
 
   const data = await response.json();
-  const expiresAt = Date.now() + (data.expires_in * 1000);
+  const expiresAt = Date.now() + data.expires_in * 1000;
 
   localStorage.setItem('spotify_access_token', data.access_token);
   localStorage.setItem('spotify_expires_at', String(expiresAt));
@@ -190,6 +221,8 @@ function logout() {
   ].forEach((key) => localStorage.removeItem(key));
 
   updateAuthUI(false);
+  setPlayingState(false);
+  els.spotifyEmbed.src = '';
   setStatus('Sessão encerrada.');
 }
 
@@ -259,8 +292,7 @@ function renderMeta(meta) {
   els.openSpotify.href = meta.openUrl;
   els.openSpotify.hidden = false;
 
-  els.vinyl.classList.remove('paused');
-  els.vinyl.classList.add('spinning');
+  setPlayingState(true);
 }
 
 async function loadSpotifyUrl() {
@@ -279,6 +311,7 @@ async function loadSpotifyUrl() {
     setStatus(`${meta.kind} carregado com sucesso.`);
   } catch (error) {
     console.error(error);
+    setPlayingState(false);
     setStatus(error.message || 'Não foi possível carregar o conteúdo.');
   }
 }
@@ -316,6 +349,7 @@ async function bootstrapAuth() {
 els.loginBtn.addEventListener('click', loginWithSpotify);
 els.logoutBtn.addEventListener('click', logout);
 els.loadBtn.addEventListener('click', loadSpotifyUrl);
+
 els.spotifyUrl.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
     loadSpotifyUrl();

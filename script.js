@@ -365,7 +365,7 @@ function renderMeta(meta) {
   }
 
   if (els.coverDisc) {
-    els.coverDisc.src = meta.cover;
+    document.getElementById("coverOverlay").src = meta.cover;
     els.coverDisc.style.display = 'block';
   }
 
